@@ -4,36 +4,42 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 VALID_END_CHARS = ['.', '!', '?']
-MODEL_PATH = './model_128_8_8.pth'
+MODEL_PATH = './new_fine_tuned_model_200_8_8_word_level.pth'
 
 INTERFACE_TITLE = "JokeGPT"
 INTERFACE_DESCRIPTION = "Input some starting character(s) or word(s) to create a joke!"
 TEXTBOX_PLACEHOLDER = "Input some starting character(s) or word(s)!"
 INTERFACE_EXAMPLE_ENTRIES = ["UCLA", "Why did", "What"]
 
-MIN_CHAR_OUTPUT = 175
+MIN_CHAR_OUTPUT = 100
 
 # hyperparameters
 block_size = 128
-n_embd = 128
+n_embd = 200
 n_head = 8
 n_layer = 8
 dropout = 0.0
 
-chars = ''
-with open('./mini_pile_train_cleaned_v2_vocab.txt', 'r') as f:
-  chars = f.read()
+# chars = ''
+# with open('./mini_pile_train_cleaned_v2_vocab.txt', 'r') as f:
+#   chars = f.read()
 
-stoi = { ch:i for i, ch in enumerate(chars)}
-itos = { i:ch for i, ch in enumerate(chars)}
+# stoi = { ch:i for i, ch in enumerate(chars)}
+# itos = { i:ch for i, ch in enumerate(chars)}
 
-# encoder: string to int
-encode = lambda s: [stoi[c] for c in s if c in stoi]
+# # encoder: string to int
+# encode = lambda s: [stoi[c] for c in s if c in stoi]
 
-# decoder: int to string
-decode = lambda l: ''.join([itos[i] for i in l if i in itos])
+# # decoder: int to string
+# decode = lambda l: ''.join([itos[i] for i in l if i in itos])
 
-vocab_size = len(chars)
+# vocab_size = len(chars)
+import transformers
+from transformers import AutoTokenizer
+
+# For instance, using the BERT tokenizer
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+vocab_size = len(tokenizer)
 
 # single head
 class Head(nn.Module):
@@ -145,7 +151,7 @@ class GPTLanguageModel(nn.Module):
         idx = torch.cat((idx, idx_next), dim=1)
         
         iter += 1
-        decode_idx = decode(idx[0].tolist())
+        decode_idx = tokenizer.decode(idx[0].tolist(), skip_special_tokens=True)
         last_char = decode_idx[-1]
 
         yield decode_idx
@@ -159,7 +165,7 @@ model.load_state_dict(checkpoint['model_state_dict'])
 
 # Generator that returns output for chatbox 
 def generate_response(message, history):
-    context = torch.tensor(encode(message), dtype=torch.long)
+    context = torch.tensor(tokenizer.encode(message), dtype=torch.long)
 
     for value in model.generate(context.unsqueeze(0), max_new_tokens=MIN_CHAR_OUTPUT):  
         yield value
@@ -171,7 +177,7 @@ demo = gr.ChatInterface(generate_response,
 
     theme="soft",
 
-    chatbot=gr.Chatbot(height=755),
+    chatbot=gr.Chatbot(height=555),
     textbox=gr.Textbox(placeholder=TEXTBOX_PLACEHOLDER, container=False, scale=7),
 
     title=INTERFACE_TITLE,
