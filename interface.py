@@ -2,6 +2,8 @@ import gradio as gr
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+import transformers
+from transformers import AutoTokenizer
 
 VALID_END_CHARS = ['.', '!', '?']
 MODEL_PATH = './new_fine_tuned_model_200_8_8_word_level.pth'
@@ -19,23 +21,6 @@ n_embd = 200
 n_head = 8
 n_layer = 8
 dropout = 0.0
-
-# chars = ''
-# with open('./mini_pile_train_cleaned_v2_vocab.txt', 'r') as f:
-#   chars = f.read()
-
-# stoi = { ch:i for i, ch in enumerate(chars)}
-# itos = { i:ch for i, ch in enumerate(chars)}
-
-# # encoder: string to int
-# encode = lambda s: [stoi[c] for c in s if c in stoi]
-
-# # decoder: int to string
-# decode = lambda l: ''.join([itos[i] for i in l if i in itos])
-
-# vocab_size = len(chars)
-import transformers
-from transformers import AutoTokenizer
 
 # For instance, using the BERT tokenizer
 tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
