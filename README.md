@@ -10,16 +10,6 @@ Using the framework provided by Dr. Andrej Karpathy (https://github.com/karpathy
 4. If you want to modify the length of the output set `MIN_CHAR_OUTPUT` to the desired (integer) value.
 5. Run the command `python3 interface.py` in the terminal
 6. Connect to the local server provided in the output.
-1. Install gradio ```pip install gradio``` and torch ```pip install torch```
-1. First download the model you want to use and add it into the same directory as the interface.
-
-2. Set ```MODEL_PATH = "./your_model_name.pth"```
-
-3. If you want to modify the length of the output set ```MIN_CHAR_OUTPUT``` to the desired amount. Type: Int
-
-4. Run the interface via the terminal ```python3 interface.py```
-
-5. Connect to the local server provided in the output. 
 
 ## Contributors
 
